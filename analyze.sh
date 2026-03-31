@@ -48,42 +48,80 @@ claude --print -m opus "You are analyzing a day's worth of screenshots from Dhru
 Dhruv is Director of Customer Success at Atlan. He leads 3 pods (EMEA, Growth, EST) with 15 direct reports. His day involves a mix of: customer calls, 1:1s with team, internal strategy meetings, and work between meetings.
 
 ## Your Task
-Analyze all the screenshots provided. Each filename is a timestamp (HHMMSS.jpg) from $DATE.
+Analyze all the screenshots provided. Each filename is a timestamp (HHMMSS.jpg) from $DATE. The timestamp format is HHMMSS (e.g., 143025 = 2:30:25 PM IST).
 
 For EVERY screenshot:
 1. Note the timestamp
 2. Identify what app/tool is visible (Zoom, Chrome, Slack, terminal, etc.)
 3. If Chrome: what site/tool (Vitally, Confluence, Google Sheets, Claude, Glean, Linear, etc.)
 4. What specific activity is happening (reading, writing, building, browsing, on a call, etc.)
-5. Is this AI-assisted work or manual/traditional work? Be nuanced — using Slack isn't automatically manual, and being on Zoom doesn't mean no AI work is happening in other windows.
+5. Is this AI-assisted work or manual/traditional work? Be nuanced — using Slack isn't automatically manual, and being on Zoom doesn't mean no AI work is happening in other windows. Multiple windows may be visible.
 
-Then produce a daily summary in this format:
+Then produce a daily summary using ONLY this format. Use tables everywhere. No prose paragraphs.
 
 # Daily Activity Report — $DATE
 
 ## Time Map
-(Chronological breakdown of the day in blocks, with what was happening in each block)
+
+| Time Block | Duration | App/Tool | Activity | AI-Native? |
+|---|---|---|---|---|
+| 9:00-9:45am | 45m | Zoom + Chrome | 1:1 with Adriel, Slack open in background | Ambiguous |
+| 9:45-10:15am | 30m | Chrome (Vitally) | Updating account health scores | Manual |
+| ... | ... | ... | ... | ... |
 
 ## Activity Breakdown
-(Categories discovered from the data — do NOT use a preset list. Let the screenshots tell you what the categories are.)
 
-## AI-Native vs Manual Work
-- Total active time: Xh Ym
-- AI-assisted time: Xh Ym (X%) — explain what qualifies
-- Manual/traditional time: Xh Ym (X%) — explain what qualifies
-- Ambiguous: Xh Ym (X%) — calls, reading, etc. where you can't determine
+| Category | Time | % of Day | Details |
+|---|---|---|---|
+| (let the screenshots define the categories — do NOT use a preset list) | | | |
 
-## Patterns Noticed
-(What stood out? Long stretches of repetitive work? Context switching? Deep focus blocks?)
+## AI-Native Score
 
-## Biggest Opportunity
-(ONE specific workflow from today that would benefit most from AI assistance. Be specific about what was being done and how AI could help.)
+| Metric | Time | % |
+|---|---|---|
+| Total active time | Xh Ym | 100% |
+| AI-assisted | Xh Ym | X% |
+| Manual/traditional | Xh Ym | X% |
+| Ambiguous (calls, reading) | Xh Ym | X% |
 
-Read each screenshot carefully. Go deep, not wide." $FILE_ARGS > "$SUMMARY_FILE" 2>/dev/null
+For each row, briefly note what qualified it.
+
+## Context Switching
+
+| Metric | Value |
+|---|---|
+| Number of app switches | X |
+| Longest uninterrupted block | Xm (doing what) |
+| Most fragmented hour | X:00-X:00 (Y switches) |
+
+## Top 3 Automation Opportunities
+
+| # | What you did manually | Time spent | How AI could do it |
+|---|---|---|---|
+| 1 | (specific activity from today) | Xm | (specific suggestion) |
+| 2 | | | |
+| 3 | | | |
+
+Read each screenshot carefully. Go deep, not wide. Let the data tell the story — do not assume or generalize." $FILE_ARGS > "$SUMMARY_FILE" 2>/dev/null
 
 if [ -f "$SUMMARY_FILE" ] && [ -s "$SUMMARY_FILE" ]; then
     echo "Analysis complete: $SUMMARY_FILE"
+
+    # Push summary to GitHub so the remote Slack agent can pick it up
+    cd "$HOME/ai-mirror"
+    git add "daily-summaries/$DATE.md"
+    git commit -m "Daily activity report — $DATE"
+    git push origin main 2>/dev/null
+
+    echo "Summary pushed to GitHub"
 else
     echo "Analysis failed or produced empty output"
+    # Push a failure marker so the remote agent can alert via Slack
+    mkdir -p "$SUMMARY_DIR"
+    echo "FAILED — Analysis produced no output. Screenshots: $TOTAL, Sampled: $SAMPLE_COUNT" > "$SUMMARY_DIR/$DATE.md"
+    cd "$HOME/ai-mirror"
+    git add "daily-summaries/$DATE.md"
+    git commit -m "Analysis FAILED — $DATE"
+    git push origin main 2>/dev/null
     exit 1
 fi

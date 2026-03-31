@@ -44,14 +44,14 @@ for f in $SELECTED; do
 done
 
 # Run Claude Code in non-interactive mode for analysis
-claude --print --model opus --allowedTools "Read" --permission-mode acceptEdits "You are analyzing a day's worth of screenshots from Dhruv Saharya's laptop to understand how he spends his working time.
+claude --print --model opus --allowedTools "Read" --permission-mode acceptEdits "You are analyzing a day's worth of screenshots from a user's laptop to understand how they spend their working time.
 
 IMPORTANT: First, read each of these screenshot files using the Read tool. They are JPEG images. Read ALL of them before producing your analysis:
 $FILE_LIST
 
 
 ## Context
-Dhruv is Director of Customer Success at Atlan. He leads 3 pods (EMEA, Growth, EST) with 15 direct reports. His day involves a mix of: customer calls, 1:1s with team, internal strategy meetings, and work between meetings.
+Infer the user's role and context from the screenshots themselves — what apps they use, what tools they work in, who they communicate with.
 
 ## Your Task
 Analyze all the screenshots provided. Each filename is a timestamp (HHMMSS.jpg) from $DATE. The timestamp format is HHMMSS (e.g., 143025 = 2:30:25 PM IST).

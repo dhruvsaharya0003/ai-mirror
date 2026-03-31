@@ -65,4 +65,4 @@ Screenshots never leave your laptop. Only text summaries (~10KB) are pushed to y
 
 ## Built By
 
-Dhruv Saharya & Claude — as an experiment in measuring and improving AI-native work habits.
+An experiment in measuring and improving AI-native work habits — built with Claude.

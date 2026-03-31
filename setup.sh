@@ -3,7 +3,7 @@
 # AI Mirror — Setup Script
 # Automated daily activity tracking + AI-native work analysis
 #
-# Built by Dhruv Saharya & Claude
+# Built with Claude
 #
 # Prerequisites:
 #   - macOS

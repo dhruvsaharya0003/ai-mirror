@@ -5,7 +5,7 @@
 
 DATE=${1:-$(date +%Y-%m-%d)}
 SCREENSHOT_DIR="$HOME/ai-mirror/screenshots/$DATE"
-SUMMARY_DIR="$HOME/ai-mirror/daily-summaries"
+SUMMARY_DIR="$HOME/ai-mirror-data/daily-summaries"
 SUMMARY_FILE="$SUMMARY_DIR/$DATE.md"
 
 if [ ! -d "$SCREENSHOT_DIR" ]; then
@@ -108,7 +108,7 @@ if [ -f "$SUMMARY_FILE" ] && [ -s "$SUMMARY_FILE" ]; then
     echo "Analysis complete: $SUMMARY_FILE"
 
     # Push summary to GitHub so the remote Slack agent can pick it up
-    cd "$HOME/ai-mirror"
+    cd "$HOME/ai-mirror-data"
     git add "daily-summaries/$DATE.md"
     git commit -m "Daily activity report — $DATE"
     git push origin main 2>/dev/null
@@ -119,7 +119,7 @@ else
     # Push a failure marker so the remote agent can alert via Slack
     mkdir -p "$SUMMARY_DIR"
     echo "FAILED — Analysis produced no output. Screenshots: $TOTAL, Sampled: $SAMPLE_COUNT" > "$SUMMARY_DIR/$DATE.md"
-    cd "$HOME/ai-mirror"
+    cd "$HOME/ai-mirror-data"
     git add "daily-summaries/$DATE.md"
     git commit -m "Analysis FAILED — $DATE"
     git push origin main 2>/dev/null

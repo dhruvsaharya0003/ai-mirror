@@ -6,6 +6,7 @@
 DATE=${1:-$(date +%Y-%m-%d)}
 SCREENSHOT_DIR="$HOME/ai-mirror/screenshots/$DATE"
 SUMMARY_DIR="$HOME/ai-mirror-data/daily-summaries"
+mkdir -p "$SUMMARY_DIR"
 SUMMARY_FILE="$SUMMARY_DIR/$DATE.md"
 
 if [ ! -d "$SCREENSHOT_DIR" ]; then
@@ -35,14 +36,19 @@ else
     echo "Analyzing all $SAMPLE_COUNT screenshots"
 fi
 
-# Build the file list for Claude
-FILE_ARGS=""
+# Build the read instructions for Claude
+FILE_LIST=""
 for f in $SELECTED; do
-    FILE_ARGS="$FILE_ARGS $f"
+    FILE_LIST="$FILE_LIST
+- $f"
 done
 
 # Run Claude Code in non-interactive mode for analysis
-claude --print -m opus "You are analyzing a day's worth of screenshots from Dhruv Saharya's laptop to understand how he spends his working time.
+claude --print --model opus --allowedTools "Read" --permission-mode acceptEdits "You are analyzing a day's worth of screenshots from Dhruv Saharya's laptop to understand how he spends his working time.
+
+IMPORTANT: First, read each of these screenshot files using the Read tool. They are JPEG images. Read ALL of them before producing your analysis:
+$FILE_LIST
+
 
 ## Context
 Dhruv is Director of Customer Success at Atlan. He leads 3 pods (EMEA, Growth, EST) with 15 direct reports. His day involves a mix of: customer calls, 1:1s with team, internal strategy meetings, and work between meetings.
@@ -102,7 +108,7 @@ For each row, briefly note what qualified it.
 | 2 | | | |
 | 3 | | | |
 
-Read each screenshot carefully. Go deep, not wide. Let the data tell the story — do not assume or generalize." $FILE_ARGS > "$SUMMARY_FILE" 2>/dev/null
+Read each screenshot carefully. Go deep, not wide. Let the data tell the story — do not assume or generalize." > "$SUMMARY_FILE" 2>/dev/null
 
 if [ -f "$SUMMARY_FILE" ] && [ -s "$SUMMARY_FILE" ]; then
     echo "Analysis complete: $SUMMARY_FILE"

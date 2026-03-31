@@ -4,3 +4,4 @@ capture-error.log
 analyze-error.log
 analyze-output.log
 .DS_Store
+.analyzed-*
